@@ -72,7 +72,7 @@ const courseSchema = new Schema<Course>({
       type: String,
     },
   ],
-  enrollments: [{ type: Schema.Types.ObjectId, ref: 'User  ' }],
+  enrollments: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 })
 
 courseSchema.pre('validate', function (next) {
