@@ -1,0 +1,134 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    image: nginx:latest
+    container_name: api-gateway
+    env_file:
+      - .env
+    depends_on:
+      - auth-service
+      - user-service
+      - course-service
+      - lesson-service
+      - comment-service
+      - favorite-service
+      - enrollment-service
+    ports:
+      - "3000:80"
+    volumes:
+      - ./services/api-gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - backend
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_USER}:${PORT_USER}"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+  favorite-service:
+    build:
+      context: .
+      dockerfile: services/favorite-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_FAVORITE}:${PORT_FAVORITE}"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_AUTH}:${PORT_AUTH}"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+  course-service:
+    build:
+      context: .
+      dockerfile: services/course-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_COURSE}:${PORT_COURSE}"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+  comment-service:
+    build:
+      context: .
+      dockerfile: services/comment-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_COMMENT}:${PORT_COMMENT}"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+  lesson-service:
+    build:
+      context: .
+      dockerfile: services/lesson-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_LESSON}:${PORT_LESSON}"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+
+  enrollment-service:
+    build:
+      context: .
+      dockerfile: services/enrollment-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT_ENROLLMENT}:${PORT_ENROLLMENT}"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+
+  mongo:
+    image: mongo:5.0
+    volumes:
+      - mongo_userdata:/data/db
+    ports:
+      - "27018:27017"
+    networks:
+      - backend
+
+#  rabbitmq:
+#    image: rabbitmq:3-management
+#    healthcheck:
+#      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+#      interval: 10s
+#      retries: 5
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    networks:
+#      - backend
+
+networks:
+  backend:
+
+volumes:
+  mongo_userdata:
